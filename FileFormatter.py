@@ -3,6 +3,11 @@ import argparse
 import shutil
 import py7zr
 
+def clean_filename(filename):
+    # Function to clean up the filename by removing content inside parentheses
+    parts = filename.split('(')
+    return parts[0].strip()
+
 def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", overwrite=False):
     try:
         # Extract all files to a temporary folder
@@ -15,8 +20,9 @@ def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", ove
         # Get the list of extracted items
         extracted_items = os.listdir(temp_folder)
 
-        # Create a new folder based on the provided ID
-        new_folder_name = f"Wii Fit Plus [{new_id}]"
+        # Create a new folder based on the cleaned filename and the provided ID
+        clean_filename_without_extension = os.path.splitext(clean_filename(os.path.basename(zip_file)))[0]
+        new_folder_name = f"{clean_filename_without_extension} [{new_id}]"
         new_folder_path = os.path.join(destination_path, new_folder_name)
         os.makedirs(new_folder_path, exist_ok=True)
 
