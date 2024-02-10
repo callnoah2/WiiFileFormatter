@@ -1,39 +1,39 @@
 import os
-import zipfile
 import argparse
-from tqdm import tqdm
 import shutil
+import py7zr
 
 def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", overwrite=False):
     try:
-        # Unzip the files
-        with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-            # Use tqdm to display a progress bar
-            extracted_files = tqdm(zip_ref.namelist(), desc="Extracting", unit="file")
+        # Extract all files to a temporary folder
+        temp_folder = "/tmp/FileFormatterTemp"
+        os.makedirs(temp_folder, exist_ok=True)
 
-            for file_name in extracted_files:
-                extracted_files.set_postfix(file=file_name)
-                zip_ref.extract(file_name, destination_path)
+        with py7zr.SevenZipFile(zip_file, mode='r') as archive:
+            archive.extractall(temp_folder)
 
-        # Get the list of extracted files
-        extracted_files = os.listdir(destination_path)
+        # Get the list of extracted items
+        extracted_items = os.listdir(temp_folder)
 
-        # Rename each file
-        for file_name in extracted_files:
-            old_path = os.path.join(destination_path, file_name)
+        # Create a new folder based on the provided ID
+        new_folder_name = f"Wii Fit Plus [{new_id}]"
+        new_folder_path = os.path.join(destination_path, new_folder_name)
+        os.makedirs(new_folder_path, exist_ok=True)
 
-            # Remove (USA) and (<languages>) and add [ID]
-            new_name = file_name.replace('(USA)', '').replace('(<languages>)', '').strip() + f" [{new_id}]"
+        # Move each item into the new folder without renaming contents
+        for extracted_item in extracted_items:
+            extracted_item_path = os.path.join(temp_folder, extracted_item)
+            new_item_path = os.path.join(new_folder_path, extracted_item)
 
-            # Construct the new path
-            new_path = os.path.join(destination_path, new_name)
-
-            # Check if the file already exists
-            if not overwrite and os.path.exists(new_path):
-                print(f"Skipping {new_name} as it already exists.")
+            # Check if the item already exists
+            if not overwrite and os.path.exists(new_item_path):
+                print(f"Skipping {extracted_item} as it already exists.")
             else:
-                os.rename(old_path, new_path)
-                print(f"Renamed {file_name} to {new_name}")
+                # Move the item to the destination folder
+                shutil.move(extracted_item_path, new_item_path)
+
+        # Cleanup: Remove the temporary folder
+        shutil.rmtree(temp_folder)
 
         print("Unzipping and renaming completed successfully.")
 
