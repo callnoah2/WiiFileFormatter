@@ -15,7 +15,7 @@ The Wii File Formatter is a Python script designed to unzip files, remove conten
 1. Clone or download the repository to your local machine.
 
 ```bash
-git clone https://github.com/your-username/wii-file-formatter.git
+git clone https://github.com/callnoah2/WiiFileFormatter
 ```
 Navigate to the file directory
 ```bash
