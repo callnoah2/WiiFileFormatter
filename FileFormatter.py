@@ -9,9 +9,11 @@ def clean_filename(filename):
     return parts[0].strip()
 
 def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", overwrite=False):
+    new_id = new_id.upper()
     try:
         # Extract all files to a temporary folder
-        temp_folder = "/tmp/FileFormatterTemp"
+        temp_folder = "/tmp/FileFormatterTemp/" + new_id
+        print(f"Making temp file called {temp_folder}")
         os.makedirs(temp_folder, exist_ok=True)
 
         with py7zr.SevenZipFile(zip_file, mode='r') as archive:
@@ -35,13 +37,19 @@ def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", ove
             if not overwrite and os.path.exists(new_item_path):
                 print(f"Skipping {extracted_item} as it already exists.")
             else:
-                # Move the item to the destination folder
-                shutil.move(extracted_item_path, new_item_path)
+                try:
+                    # Copy the item to the destination folder
+                    shutil.copy2(extracted_item_path, new_item_path)
 
+                    # Remove the original file after copying
+                    os.remove(extracted_item_path)
+
+                except Exception as move_error:
+                    print(f"Error moving {extracted_item}: {move_error}")
         # Cleanup: Remove the temporary folder
         shutil.rmtree(temp_folder)
 
-        print("Unzipping and renaming completed successfully.")
+        print(f"Unzipping and renaming completed successfully for {new_folder_name}.")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -60,5 +68,7 @@ if __name__ == "__main__":
     if not (args.zip_file and args.new_id):
         parser.print_usage()
         print("Error: Both 'zip_file' and 'new_id' are required.")
+    elif len(args.new_id) != 6:
+        raise ValueError("Error: New ID must be exactly 6 characters long.")
     else:
         unzip_and_rename(args.zip_file, args.new_id, args.destination_path, args.overwrite)
