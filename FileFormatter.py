@@ -49,7 +49,7 @@ def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", ove
         # Cleanup: Remove the temporary folder
         shutil.rmtree(temp_folder)
 
-        print(f"Unzipping and renaming completed successfully for {new_folder_name}.")
+        print(f"\nUnzipping and renaming completed successfully for {new_folder_name}.\n")
 
     except Exception as e:
         print(f"Error: {e}")
