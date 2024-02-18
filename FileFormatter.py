@@ -8,6 +8,26 @@ def clean_filename(filename):
     parts = filename.split('(')
     return parts[0].strip()
 
+def rename_wbfs_files(temp_folder, new_id):
+    # Get a list of files in the specified path
+    files = [f for f in os.listdir(temp_folder) if os.path.isfile(os.path.join(temp_folder, f))]
+
+    # Iterate through each file
+    for file_name in files:
+        file_path = os.path.join(temp_folder, file_name)
+
+        # Check if the file is a .wbfs file
+        if file_name.endswith('.wbfs'):
+            # Create the new file name with the provided ID
+            new_file_name = f'{new_id}.wbfs'
+
+            # Construct the new file path
+            new_file_path = os.path.join(temp_folder, new_file_name)
+
+            # Rename the file
+            os.rename(file_path, new_file_path)
+            print(f'Renamed: {file_name} to {new_file_name}')
+
 def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", overwrite=False):
     new_id = new_id.upper()
     try:
@@ -18,6 +38,9 @@ def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", ove
 
         with py7zr.SevenZipFile(zip_file, mode='r') as archive:
             archive.extractall(temp_folder)
+
+        # Rename .wbfs files in the temporary folder
+        rename_wbfs_files(temp_folder, new_id)
 
         # Get the list of extracted items
         extracted_items = os.listdir(temp_folder)
@@ -46,6 +69,7 @@ def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", ove
 
                 except Exception as move_error:
                     print(f"Error moving {extracted_item}: {move_error}")
+
         # Cleanup: Remove the temporary folder
         shutil.rmtree(temp_folder)
 
