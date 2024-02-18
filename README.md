@@ -28,6 +28,6 @@ python FileFormatter.py <path/to/your/file.7z> <new_id> [<optional/destinaiton>]
 ### Arguments
 
 - <path/to/your/file.7z>: Path to the zipped file you want to extract and organize.
-- [<destination_path>] (optional): Destination path for extracted files (default: "/Volumes/WII/wbfs").
+- [<destination_path>] (optional): Destination path for extracted files (default: "default_path").
 - [--overwrite] (optional): Include this flag to overwrite existing files in the destination folder.
 

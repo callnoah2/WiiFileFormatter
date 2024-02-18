@@ -28,7 +28,7 @@ def rename_wbfs_files(temp_folder, new_id):
             os.rename(file_path, new_file_path)
             print(f'Renamed: {file_name} to {new_file_name}')
 
-def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", overwrite=False):
+def unzip_and_rename(zip_file, new_id, destination_path= "/Volumes/WII/wbfs", overwrite=False):
     new_id = new_id.upper()
     try:
         # Extract all files to a temporary folder
@@ -79,11 +79,12 @@ def unzip_and_rename(zip_file, new_id, destination_path="/Volumes/WII/wbfs", ove
         print(f"Error: {e}")
 
 if __name__ == "__main__":
+    default_path = "/Volumes/WII/wbfs"
     parser = argparse.ArgumentParser(description="Unzip files and rename them.")
     parser.add_argument("zip_file", help="Path to the zipped file")
     parser.add_argument("new_id", help="New ID to be added in the filename")
-    parser.add_argument("destination_path", nargs='?', default="/Volumes/WII/wbfs",
-                        help="Destination path for extracted files (default: /Volumes/WII/wbfs)")
+    parser.add_argument("destination_path", nargs='?', default="default_path",
+                        help="Destination path for extracted files (default: default_path)")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
 
     args = parser.parse_args()
